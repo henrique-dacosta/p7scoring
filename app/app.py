@@ -82,7 +82,7 @@ def main() :
 
     @st.cache
     def load_age_population(data):
-        data_age = round((data["DAYS_BIRTH"]), 2)
+        data_age = round((data["AGE"]), 2)
         return data_age
 
     @st.cache
@@ -103,7 +103,10 @@ def main() :
     id_client = selection_clients['ID'].values
     clf  =  load_model ( '../Save_Model/Final XGBOOST Model 06oct2021' )
     predict_test = predict_model ( clf ,  probability_threshold = 0.74, data = test_df_std_sample )
-    
+     
+    # Renommer colonne 'DAYS_BIRTH' => 'AGE' et convertir en integer
+    test_info_client = test_info_client.rename({'DAYS_BIRTH':'AGE'}, axis=1)
+    test_info_client['AGE'] = test_info_client['AGE'].astype(int)
 
     #######################################
     # SIDEBAR
@@ -140,7 +143,7 @@ def main() :
     nb_credits, rev_moy, credits_moy, targets = load_infos_gen(train_compare)
 
 
-    ### Affichage des inforlations sur la sidebar ###
+    ### Affichage des informations sur la sidebar ###
     # Nombre de prêts dans l'échantillon
     st.sidebar.write("<u>Nombre de prêts dans l'échantillon :</u>", unsafe_allow_html=True)
     st.sidebar.text(nb_credits)
@@ -174,15 +177,18 @@ def main() :
 
         infos_client = identite_client(test_info_client, chk_id)
         st.write("**Sexe : **", infos_client["CODE_GENDER"].values[0])
-        st.write("**Age : **{:.0f} ans".format(int(infos_client["DAYS_BIRTH"].values[0])))
+        st.write("**Age : **{:.0f} ans".format(int(infos_client["AGE"].values[0])))
         st.write("**Status familial : **", infos_client["NAME_FAMILY_STATUS"].values[0])
         st.write("**Nombre d'enfants : **{:.0f}".format(infos_client["CNT_CHILDREN"].values[0]))
-
+        
+        # Affecter 'WEIGHTED_EXT_SOURCE' à une avariable pour pie chart comparatif en fin de dashboard
+        wscore_client = infos_client['WEIGHTED_EXT_SOURCE'].values[0]
+    
         # Histogramme des âges
         data_age = load_age_population(test_info_client)
         fig, ax = plt.subplots(figsize=(10, 5))
         sns.histplot(data_age, edgecolor = 'k', color="blue", bins=20)
-        ax.axvline(int(infos_client["DAYS_BIRTH"].values), color="green", linestyle='--')
+        ax.axvline(int(infos_client["AGE"].values), color="green", linestyle='--')
         ax.set(title="Position du client dans l'histogramme des âges", xlabel='Age(Années)', ylabel='')
         st.pyplot(fig)
     
@@ -216,10 +222,10 @@ def main() :
         st.write("**Non Défaillant avec un probabilité de : **{:.0f} %".format(round(float(Score)*100, 2)))
         
     # Dataframe avec l'ensemble des caractérisques du client
-    col_affiche = ['CODE_GENDER', 'DAYS_BIRTH', 'NAME_FAMILY_STATUS', 'CNT_CHILDREN', 'AMT_INCOME_TOTAL','AMT_CREDIT', 'AMT_ANNUITY', 'CREDIT_EXT_RATIO', 'WEIGHTED_EXT_SOURCE']
+    col_affiche = ['CODE_GENDER', 'AGE', 'NAME_FAMILY_STATUS', 'CNT_CHILDREN', 'AMT_INCOME_TOTAL','AMT_CREDIT', 'AMT_ANNUITY', 'CREDIT_EXT_RATIO', 'WEIGHTED_EXT_SOURCE']
     st.markdown("<u>Données du client :</u>", unsafe_allow_html=True)
     st.write(identite_client(test_info_client[col_affiche], chk_id))
-        
+
     # Feature importance / SHAP Values
     
     if st.checkbox("Identifiant client {:.0f} : caractéristiques importantes.".format(chk_id)):
@@ -261,12 +267,14 @@ def main() :
         
     else:
         st.write("<i>…</i>", unsafe_allow_html=True)
-            
-    if st.checkbox("Prinicipales caractéristiques de clients similaires selon les critères de : sexe, status familial, âge, revenu, montant du crédit ?"):
+    
+    # Afficahe des principales caractéristiques des clients similaires défaillants et non défaillants
+    
+    if st.checkbox("Prinicipales caractéristiques de clients similaires selon les critères de : sexe, status familial, âge, revenu, montant du crédit."):
         
         # Masques de sélection
         sexe = infos_client['CODE_GENDER'].values[0]
-        age = infos_client['DAYS_BIRTH'].values[0]
+        age = infos_client['AGE'].values[0]
         revenu = infos_client['AMT_INCOME_TOTAL'].values[0]
         credit = infos_client['AMT_CREDIT'].values[0]
         status = infos_client['NAME_FAMILY_STATUS'].values[0]
@@ -284,6 +292,12 @@ def main() :
         df_compare = compare_client[mask_0 & mask_1 & mask_2 & mask_3 & mask_4 & mask_5 ]
         df_compare = df_compare[[ 'SK_ID_CURR','CODE_GENDER', 'DAYS_BIRTH', 'NAME_FAMILY_STATUS', 'CNT_CHILDREN', 'AMT_INCOME_TOTAL', \
                                             'AMT_CREDIT', 'AMT_ANNUITY', 'CREDIT_EXT_RATIO', 'WEIGHTED_EXT_SOURCE', 'TARGET']]
+        df_compare = df_compare.rename({'DAYS_BIRTH':'AGE'}, axis=1)
+        df_compare['AGE'] = df_compare['AGE'].astype(int)
+        
+        # Affecter 'WEIGHTED_EXT_SOURCE' à une avariable pour pie chart comparatif en fin de dashboard
+        wscore_default = df_compare['WEIGHTED_EXT_SOURCE'].values[0]
+        
         st.write(df_compare)
         
         # Clients avec un profil similaire non défaillants
@@ -292,8 +306,24 @@ def main() :
         df_compare = compare_client[mask_0 & mask_1 & mask_2 & mask_3 & mask_4 & mask_5 ]
         df_compare = df_compare[[ 'SK_ID_CURR','CODE_GENDER', 'DAYS_BIRTH', 'NAME_FAMILY_STATUS', 'CNT_CHILDREN', 'AMT_INCOME_TOTAL', \
                                             'AMT_CREDIT', 'AMT_ANNUITY', 'CREDIT_EXT_RATIO', 'WEIGHTED_EXT_SOURCE', 'TARGET']]
+        df_compare = df_compare.rename({'DAYS_BIRTH':'AGE'}, axis=1)
+        df_compare['AGE'] = df_compare['AGE'].astype(int)
+        
+        # Affecter 'WEIGHTED_EXT_SOURCE' à une avariable pour pie chart comparatif en fin de dashboard
+        wscore_regular = df_compare['WEIGHTED_EXT_SOURCE'].values[0]
+        
         st.write(df_compare)
         
+        st.write("**Score normalisé comparatif sur une échelle de 0 à 6**")
+        
+        fig, ax = plt.subplots(figsize=(2,2))
+        scores_normal = [wscore_client, wscore_default, wscore_regular]
+        plt.pie(scores_normal, labels=['Client', 'Défaillant', 'Non défaillant'], startangle=90)
+        st.pyplot(fig)
+        
+        st.write("Score normalisé du client : ", wscore_client)
+        st.write("Score normalisé moyen des défaillants : ", wscore_default)
+        st.write("Score normalisé moyen des non défaillants : ", wscore_regular)
         
     st.markdown('***')
     st.markdown("**Outil d'aide à la décision développé par la groupe Prêt à dépenser**.")
