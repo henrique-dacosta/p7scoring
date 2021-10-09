@@ -182,7 +182,7 @@ def main() :
         st.write("**Nombre d'enfants : **{:.0f}".format(infos_client["CNT_CHILDREN"].values[0]))
         
         # Affecter 'WEIGHTED_EXT_SOURCE' à une avariable pour pie chart comparatif en fin de dashboard
-        wscore_client = infos_client['WEIGHTED_EXT_SOURCE'].values[0]
+        wscore_client = round(infos_client['WEIGHTED_EXT_SOURCE'].values[0], 2)
     
         # Histogramme des âges
         data_age = load_age_population(test_info_client)
@@ -213,8 +213,6 @@ def main() :
     # Solvabilité du client
     st.header("**Analyse du dossier client**")
     Score, Label = load_prediction(predict_test, chk_id)
-    # st.write("Score : ", round(Score, 2))
-    # st.write("Label : ", Label)
     st.write(chk_id)
     if Label == 1:
         st.write("**Défaillant avec un probabilité de : **{:.0f} %".format(round(float(Score)*100, 2)))
@@ -230,12 +228,8 @@ def main() :
     
     if st.checkbox("Identifiant client {:.0f} : caractéristiques importantes.".format(chk_id)):
         shap.initjs()
-        # SMOTE
         X = train_shap
         y = y_shap
-        # transform the dataset
-        # oversample = SMOTE()
-        # X, y = oversample.fit_resample(X, y)
         # create a train/test split
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=7)
         d_train = xgboost.DMatrix(X_train, label=y_train)
@@ -250,11 +244,6 @@ def main() :
         }
         model = xgboost.train(params, d_train, 10000, evals = [(d_test, "test")], verbose_eval=100, early_stopping_rounds=20)
         
-        # Ramener le format de test_info_client au format de train_shap
-        # test_info_client_shap = pd.read_csv('../data_tableau_xgb/test_df_sample.csv',encoding ='utf-8').drop('Unnamed: 0', axis=1)
-        # list_shap = train_shap.columns.tolist()
-        # info_client_shap = test_info_client_shap[list_shap]
-        # client_shap = info_client_shap[info_client_shap['SK_ID_CURR'] == chk_id]
         client_shap = test_shap[test_shap['SK_ID_CURR'] == chk_id]
             
         # Interprétation et Affichage du bar plot des features importances
@@ -296,7 +285,7 @@ def main() :
         df_compare['AGE'] = df_compare['AGE'].astype(int)
         
         # Affecter 'WEIGHTED_EXT_SOURCE' à une avariable pour pie chart comparatif en fin de dashboard
-        wscore_default = df_compare['WEIGHTED_EXT_SOURCE'].values[0]
+        wscore_default = round(df_compare['WEIGHTED_EXT_SOURCE'].values[0], 2)
         
         st.write(df_compare)
         
@@ -310,15 +299,15 @@ def main() :
         df_compare['AGE'] = df_compare['AGE'].astype(int)
         
         # Affecter 'WEIGHTED_EXT_SOURCE' à une avariable pour pie chart comparatif en fin de dashboard
-        wscore_regular = df_compare['WEIGHTED_EXT_SOURCE'].values[0]
+        wscore_regular = round(df_compare['WEIGHTED_EXT_SOURCE'].values[0], 2)
         
         st.write(df_compare)
         
         st.write("**Score normalisé comparatif sur une échelle de 0 à 6**")
         
-        fig, ax = plt.subplots(figsize=(2,2))
+        fig, ax = plt.subplots(figsize=(1,1))
         scores_normal = [wscore_client, wscore_default, wscore_regular]
-        plt.pie(scores_normal, labels=['Client', 'Défaillant', 'Non défaillant'], startangle=90)
+        plt.pie(scores_normal, labels=['Client', 'Défaillant', 'Non défaillant'], autopct='%1.1f%%', textprops={'fontsize': 5}, startangle=90)
         st.pyplot(fig)
         
         st.write("Score normalisé du client : ", wscore_client)
