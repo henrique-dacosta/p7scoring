@@ -1,15 +1,11 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.pylab as pl
+import matplotlib.pylab as plt
+
 import seaborn as sns
-import pickle
 import plotly.express as px
-from zipfile import ZipFile
-from sklearn.cluster import KMeans
 plt.style.use('fivethirtyeight')
-#sns.set_style('darkgrid')
 # Classifieur Xgboost
 import xgboost
 # Librairie Pycaret et scikit-learn
@@ -20,8 +16,8 @@ from sklearn.metrics import log_loss
 from pycaret.classification import load_model, predict_model
 from sklearn.model_selection import train_test_split
 # SMOTE
-import imblearn
-from imblearn.over_sampling import SMOTE
+# import imblearn
+# from imblearn.over_sampling import SMOTE
 # SHAP
 import shap
 shap.initjs()
@@ -303,7 +299,7 @@ def main() :
         
         st.write(df_compare)
         
-        st.write("**Score normalisé comparatif sur une échelle de 0 à 6**")
+        st.write("**Score normalisé comparatif sur une échelle de 0 à 9**")
         
         fig, ax = plt.subplots(figsize=(1,1))
         scores_normal = [wscore_client, wscore_default, wscore_regular]
