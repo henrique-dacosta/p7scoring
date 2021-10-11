@@ -15,10 +15,6 @@ from pycaret.utils import check_metric
 from sklearn.metrics import log_loss
 from pycaret.classification import load_model, predict_model
 from sklearn.model_selection import train_test_split
-# SMOTE
-# import imblearn
-# from imblearn.over_sampling import SMOTE
-# SHAP
 import shap
 shap.initjs()
 # Chargement et traitement d'image image
@@ -169,8 +165,11 @@ def main() :
     # Affichage des informations client : Sexe, Age, Status familial, Enfants, …
     st.header("**Informations du client**")
 
+    affiche_client = 0
+    
     if st.checkbox("Informations relatives au client."):
 
+        affiche_client = 1
         infos_client = identite_client(test_info_client, chk_id)
         st.write("**Sexe : **", infos_client["CODE_GENDER"].values[0])
         st.write("**Age : **{:.0f} ans".format(int(infos_client["AGE"].values[0])))
@@ -257,58 +256,64 @@ def main() :
     
     if st.checkbox("Prinicipales caractéristiques de clients similaires selon les critères de : sexe, status familial, âge, revenu, montant du crédit."):
         
-        # Masques de sélection
-        sexe = infos_client['CODE_GENDER'].values[0]
-        age = infos_client['AGE'].values[0]
-        revenu = infos_client['AMT_INCOME_TOTAL'].values[0]
-        credit = infos_client['AMT_CREDIT'].values[0]
-        status = infos_client['NAME_FAMILY_STATUS'].values[0]
-        child = infos_client['CNT_CHILDREN'].values[0]
+        if affiche_client == 1:
         
-        mask_1 = compare_client['CODE_GENDER'] == sexe
-        mask_2 = compare_client['NAME_FAMILY_STATUS'] == status
-        mask_3 = (compare_client['DAYS_BIRTH'] > 0.90 * age) & (compare_client['DAYS_BIRTH'] < 1.10 * age)
-        mask_4 = (compare_client['AMT_INCOME_TOTAL'] > 0.70 * revenu) & (compare_client['AMT_INCOME_TOTAL'] < 1.3 * revenu)
-        mask_5 = (compare_client['AMT_CREDIT'] > 0.50 * credit) & (compare_client['AMT_CREDIT'] < 1.50 * credit)
-        
-        # Clients avec un profil similaire défaillants
-        st.write("**Clients avec un profil similaire défaillants**")
-        mask_0 = compare_client['TARGET'] == 1
-        df_compare = compare_client[mask_0 & mask_1 & mask_2 & mask_3 & mask_4 & mask_5 ]
-        df_compare = df_compare[[ 'SK_ID_CURR','CODE_GENDER', 'DAYS_BIRTH', 'NAME_FAMILY_STATUS', 'CNT_CHILDREN', 'AMT_INCOME_TOTAL', \
-                                            'AMT_CREDIT', 'AMT_ANNUITY', 'CREDIT_EXT_RATIO', 'WEIGHTED_EXT_SOURCE', 'TARGET']]
-        df_compare = df_compare.rename({'DAYS_BIRTH':'AGE'}, axis=1)
-        df_compare['AGE'] = df_compare['AGE'].astype(int)
-        
-        # Affecter 'WEIGHTED_EXT_SOURCE' à une avariable pour pie chart comparatif en fin de dashboard
-        wscore_default = round(df_compare['WEIGHTED_EXT_SOURCE'].values[0], 2)
-        
-        st.write(df_compare)
-        
-        # Clients avec un profil similaire non défaillants
-        st.write("**Clients avec un profil similaire non défaillants**")
-        mask_0 = compare_client['TARGET'] == 0
-        df_compare = compare_client[mask_0 & mask_1 & mask_2 & mask_3 & mask_4 & mask_5 ]
-        df_compare = df_compare[[ 'SK_ID_CURR','CODE_GENDER', 'DAYS_BIRTH', 'NAME_FAMILY_STATUS', 'CNT_CHILDREN', 'AMT_INCOME_TOTAL', \
-                                            'AMT_CREDIT', 'AMT_ANNUITY', 'CREDIT_EXT_RATIO', 'WEIGHTED_EXT_SOURCE', 'TARGET']]
-        df_compare = df_compare.rename({'DAYS_BIRTH':'AGE'}, axis=1)
-        df_compare['AGE'] = df_compare['AGE'].astype(int)
-        
-        # Affecter 'WEIGHTED_EXT_SOURCE' à une avariable pour pie chart comparatif en fin de dashboard
-        wscore_regular = round(df_compare['WEIGHTED_EXT_SOURCE'].values[0], 2)
-        
-        st.write(df_compare)
-        
-        st.write("**Score normalisé comparatif sur une échelle de 0 à 9**")
-        
-        fig, ax = plt.subplots(figsize=(1,1))
-        scores_normal = [wscore_client, wscore_default, wscore_regular]
-        plt.pie(scores_normal, labels=['Client', 'Défaillant', 'Non défaillant'], autopct='%1.1f%%', textprops={'fontsize': 5}, startangle=90)
-        st.pyplot(fig)
-        
-        st.write("Score normalisé du client : ", wscore_client)
-        st.write("Score normalisé moyen des défaillants : ", wscore_default)
-        st.write("Score normalisé moyen des non défaillants : ", wscore_regular)
+            # Masques de sélection
+            sexe = infos_client['CODE_GENDER'].values[0]
+            age = infos_client['AGE'].values[0]
+            revenu = infos_client['AMT_INCOME_TOTAL'].values[0]
+            credit = infos_client['AMT_CREDIT'].values[0]
+            status = infos_client['NAME_FAMILY_STATUS'].values[0]
+            child = infos_client['CNT_CHILDREN'].values[0]
+
+            mask_1 = compare_client['CODE_GENDER'] == sexe
+            mask_2 = compare_client['NAME_FAMILY_STATUS'] == status
+            mask_3 = (compare_client['DAYS_BIRTH'] > 0.90 * age) & (compare_client['DAYS_BIRTH'] < 1.10 * age)
+            mask_4 = (compare_client['AMT_INCOME_TOTAL'] > 0.70 * revenu) & (compare_client['AMT_INCOME_TOTAL'] < 1.3 * revenu)
+            mask_5 = (compare_client['AMT_CREDIT'] > 0.50 * credit) & (compare_client['AMT_CREDIT'] < 1.50 * credit)
+
+            # Clients avec un profil similaire défaillants
+            st.write("**Clients avec un profil similaire défaillants**")
+            mask_0 = compare_client['TARGET'] == 1
+            df_compare = compare_client[mask_0 & mask_1 & mask_2 & mask_3 & mask_4 & mask_5 ]
+            df_compare = df_compare[[ 'SK_ID_CURR','CODE_GENDER', 'DAYS_BIRTH', 'NAME_FAMILY_STATUS', 'CNT_CHILDREN', 'AMT_INCOME_TOTAL', \
+                                                'AMT_CREDIT', 'AMT_ANNUITY', 'CREDIT_EXT_RATIO', 'WEIGHTED_EXT_SOURCE', 'TARGET']]
+            df_compare = df_compare.rename({'DAYS_BIRTH':'AGE'}, axis=1)
+            df_compare['AGE'] = df_compare['AGE'].astype(int)
+
+            # Affecter 'WEIGHTED_EXT_SOURCE' à une avariable pour pie chart comparatif en fin de dashboard
+            wscore_default = round(df_compare['WEIGHTED_EXT_SOURCE'].values[0], 2)
+
+            st.write(df_compare)
+
+            # Clients avec un profil similaire non défaillants
+            st.write("**Clients avec un profil similaire non défaillants**")
+            mask_0 = compare_client['TARGET'] == 0
+            df_compare = compare_client[mask_0 & mask_1 & mask_2 & mask_3 & mask_4 & mask_5 ]
+            df_compare = df_compare[[ 'SK_ID_CURR','CODE_GENDER', 'DAYS_BIRTH', 'NAME_FAMILY_STATUS', 'CNT_CHILDREN', 'AMT_INCOME_TOTAL', \
+                                                'AMT_CREDIT', 'AMT_ANNUITY', 'CREDIT_EXT_RATIO', 'WEIGHTED_EXT_SOURCE', 'TARGET']]
+            df_compare = df_compare.rename({'DAYS_BIRTH':'AGE'}, axis=1)
+            df_compare['AGE'] = df_compare['AGE'].astype(int)
+
+            # Affecter 'WEIGHTED_EXT_SOURCE' à une avariable pour pie chart comparatif en fin de dashboard
+            wscore_regular = round(df_compare['WEIGHTED_EXT_SOURCE'].values[0], 2)
+
+            st.write(df_compare)
+
+            st.write("**Score normalisé comparatif sur une échelle de 0 à 9**")
+
+            fig, ax = plt.subplots(figsize=(1,1))
+            scores_normal = [wscore_client, wscore_default, wscore_regular]
+            plt.pie(scores_normal, labels=['Client', 'Défaillant', 'Non défaillant'], autopct='%1.1f%%', textprops={'fontsize': 5}, startangle=90)
+            st.pyplot(fig)
+
+            st.write("Score normalisé du client : ", wscore_client)
+            st.write("Score normalisé moyen des défaillants : ", wscore_default)
+            st.write("Score normalisé moyen des non défaillants : ", wscore_regular)
+            
+        else:
+            
+            st.write("Veuillez afficher les informations relatives au client préalablement !")
         
     st.markdown('***')
     st.markdown("**Outil d'aide à la décision développé par la groupe Prêt à dépenser**.")
