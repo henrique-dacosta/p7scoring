@@ -268,8 +268,8 @@ def main() :
 
             mask_1 = compare_client['CODE_GENDER'] == sexe
             mask_2 = compare_client['NAME_FAMILY_STATUS'] == status
-            mask_3 = (compare_client['DAYS_BIRTH'] > 0.90 * age) & (compare_client['DAYS_BIRTH'] < 1.10 * age)
-            mask_4 = (compare_client['AMT_INCOME_TOTAL'] > 0.70 * revenu) & (compare_client['AMT_INCOME_TOTAL'] < 1.3 * revenu)
+            mask_3 = (compare_client['DAYS_BIRTH'] > 0.80 * age) & (compare_client['DAYS_BIRTH'] < 1.20 * age)
+            mask_4 = (compare_client['AMT_INCOME_TOTAL'] > 0.50 * revenu) & (compare_client['AMT_INCOME_TOTAL'] < 1.5 * revenu)
             mask_5 = (compare_client['AMT_CREDIT'] > 0.50 * credit) & (compare_client['AMT_CREDIT'] < 1.50 * credit)
 
             # Clients avec un profil similaire défaillants
@@ -282,7 +282,7 @@ def main() :
             df_compare['AGE'] = df_compare['AGE'].astype(int)
 
             # Affecter 'WEIGHTED_EXT_SOURCE' à une avariable pour pie chart comparatif en fin de dashboard
-            wscore_default = round(df_compare['WEIGHTED_EXT_SOURCE'].values[0], 2)
+            wscore_default = round(df_compare['WEIGHTED_EXT_SOURCE'].mean(), 2)
 
             st.write(df_compare)
 
@@ -296,7 +296,7 @@ def main() :
             df_compare['AGE'] = df_compare['AGE'].astype(int)
 
             # Affecter 'WEIGHTED_EXT_SOURCE' à une avariable pour pie chart comparatif en fin de dashboard
-            wscore_regular = round(df_compare['WEIGHTED_EXT_SOURCE'].values[0], 2)
+            wscore_regular = round(df_compare['WEIGHTED_EXT_SOURCE'].mean(), 2)
 
             st.write(df_compare)
 
