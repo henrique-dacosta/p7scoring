@@ -93,7 +93,7 @@ def main() :
     # Chargement des données ……
     test_info_client, selection_clients, train_compare, compare_client, test_df_std_sample, train_shap, test_shap, y_shap, target = load_data()
     id_client = selection_clients['ID'].values
-    clf  =  load_model ( '../Save_Model/Final XGBOOST Model 06oct2021' )
+    clf  =  load_model ( 'Save_Model/Final XGBOOST Model 06oct2021' )
     predict_test = predict_model ( clf ,  probability_threshold = 0.74, data = test_df_std_sample )
      
     # Renommer colonne 'DAYS_BIRTH' => 'AGE' et convertir en integer
