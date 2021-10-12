@@ -24,7 +24,7 @@
 * **P7_07_Annexe1_data :** Annexe 1 - Préparation des jeux de données pour l'entraînement des modèles de classification et pour le tableau de bord Streamlit.
 * **P7_08_Annexe2_data_xgb_300 :** Annexe 2 - Préparation des jeux de données pour l'affichage des shap values pour le modèle Xgboost.
 * **P7_09_Code_Dashboard_API_Streamlit :** Code pour l'affichage du dashboard et le déploiement en ligne sur la plateforme Streamlit.
-* **P7_10_Note_Méthodologique**.
+* **P7_10_Note_Méthodologique.
 
 ## Utilisation de la bibliothèque Pycaret pour les travaux de modélisation
 
