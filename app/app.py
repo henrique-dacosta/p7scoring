@@ -283,8 +283,11 @@ def main() :
 
             # Affecter 'WEIGHTED_EXT_SOURCE' à une avariable pour pie chart comparatif en fin de dashboard
             wscore_default = round(df_compare['WEIGHTED_EXT_SOURCE'].mean(), 2)
-
-            st.write(df_compare)
+            
+            if np.math.isnan(wscore_default):
+                st.write('Selon les critères de similarité retenus, pas de clients comparables à afficher.')
+            else:
+                st.write(df_compare)
 
             # Clients avec un profil similaire non défaillants
             st.write("**Clients avec un profil similaire non défaillants**")
@@ -297,9 +300,13 @@ def main() :
 
             # Affecter 'WEIGHTED_EXT_SOURCE' à une avariable pour pie chart comparatif en fin de dashboard
             wscore_regular = round(df_compare['WEIGHTED_EXT_SOURCE'].mean(), 2)
+            
+            if np.math.isnan(wscore_regular):
+                st.write('Selon les critères de similarité retenus, pas de clients comparables à afficher.')
+            else:
+                st.write(df_compare)
 
-            st.write(df_compare)
-
+            # Afficher le pie chart des scores normalisés comparés entre le client, les défaillants et les non défaillants 
             st.write("**Score normalisé comparatif sur une échelle de 0 à 9**")
 
             fig, ax = plt.subplots(figsize=(1,1))
