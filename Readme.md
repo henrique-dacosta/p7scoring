@@ -1,7 +1,7 @@
 # Parcours Data Scientist - OpenClassrooms  
 
                                     Projet N° 7 : Implémentez un modèle de scoring
-                                    
+                                    ----------------------------------------------
 ## Mission
 
 * Construire un modèle de scoring qui donnera une prédiction sur la probabilité de faillite d'un client de façon automatique.
