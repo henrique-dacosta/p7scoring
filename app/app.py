@@ -36,10 +36,10 @@ def main() :
         # Jeu de données pour les comparaisons dans la base Train avec Target
         train_compare = pd.read_csv('data_tableau_300_xgb/train_df_300_sample.csv', index_col='SK_ID_CURR', encoding ='utf-8').drop('Unnamed: 0', axis=1)
         compare_client = pd.read_csv('data_tableau_300_xgb/train_df_300_sample.csv', encoding ='utf-8').drop('Unnamed: 0', axis=1)
-        # train_df_std_300_sample = pd.read_csv('../data_tableau_300_xgb/train_df_std_300_sample.csv',encoding ='utf-8').drop('Unnamed: 0', axis=1)
+        # train_df_std_300_sample = pd.read_csv('data_tableau_300_xgb/train_df_std_300_sample.csv',encoding ='utf-8').drop('Unnamed: 0', axis=1)
         
         # Jeu de données pour la prédiction sur la base Test avec le classifieur Final Xhboost Model
-        # test_predict_pycaret = pd.read_csv('../data_tableau_300_xgb/test_df_std_300_sample.csv').drop('Unnamed: 0', axis=1) 
+        # test_predict_pycaret = pd.read_csv('data_tableau_300_xgb/test_df_std_300_sample.csv').drop('Unnamed: 0', axis=1) 
         test_df_std_sample = pd.read_csv('data_tableau_300_xgb/test_df_std_300_sample.csv').drop('Unnamed: 0', axis=1)
         
         # Jeux de données pour les features importance (SHAP Values)
@@ -222,6 +222,8 @@ def main() :
     # Feature importance / SHAP Values
     
     if st.checkbox("Identifiant client {:.0f} : caractéristiques importantes.".format(chk_id)):
+        import numpy as np
+        import shap
         shap.initjs()
         X = train_shap
         y = y_shap
