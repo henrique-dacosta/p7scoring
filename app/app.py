@@ -52,7 +52,7 @@ def main() :
         
         target = train_compare.iloc[:, -1:]
 
-        return test_info_client, selection_clients, train_compare, compare_client, test_df_std_sample, train_shap, test_shap, y_shap, target
+        return test_info_client, selection_clients, train_compare, compare_client, test_df_std_sample, target
 
 
     # @st.cache
