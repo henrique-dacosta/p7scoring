@@ -223,21 +223,21 @@ def main() :
 
     # Feature importance / SHAP Values
     
-    if st.checkbox("Identifiant client {:.0f} : caractéristiques importantes.".format(chk_id)):
+    # if st.checkbox("Identifiant client {:.0f} : caractéristiques importantes.".format(chk_id)):
         
-        shap_test = test_df_std_sample[test_df_std_sample['SK_ID_CURR'] == chk_id]
-        train_pipe = clf[:-1].transform(shap_test)
+    #    shap_test = test_df_std_sample[test_df_std_sample['SK_ID_CURR'] == chk_id]
+    #    train_pipe = clf[:-1].transform(shap_test)
             
         # Interprétation et Affichage du bar plot des features importances
         # fig, ax = plt.subplots(figsize=(10, 10))
-        explainer = shap.TreeExplainer(clf.named_steps["trained_model"])
-        shap_values = explainer.shap_values(train_pipe)
-        number = st.slider("Choix du nombre de caratéristiques du client …", 0, 20, 8)
-        shap.summary_plot(shap_values, train_pipe, max_display=number, plot_type ="bar", color_bar=False)
+        # explainer = shap.TreeExplainer(clf.named_steps["trained_model"])
+        # shap_values = explainer.shap_values(train_pipe)
+        # number = st.slider("Choix du nombre de caratéristiques du client …", 0, 20, 8)
+        #shap.summary_plot(shap_values, train_pipe, max_display=number, plot_type ="bar", color_bar=False)
         # st.pyplot(fig)
         
-    else:
-        st.write("<i>…</i>", unsafe_allow_html=True)
+    # else:
+    #    st.write("<i>…</i>", unsafe_allow_html=True)
     
     # Afficahe des principales caractéristiques des clients similaires défaillants et non défaillants
     
