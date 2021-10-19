@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+from numpy import *
 import matplotlib.pylab as plt
 
 import seaborn as sns
@@ -222,8 +223,7 @@ def main() :
     # Feature importance / SHAP Values
     
     if st.checkbox("Identifiant client {:.0f} : caractéristiques importantes.".format(chk_id)):
-        from numpy import *
-        import shap
+        
         shap.initjs()
         X = train_shap
         y = y_shap
