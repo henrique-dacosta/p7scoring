@@ -1,11 +1,13 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import matplotlib.pylab as plt
 
 import seaborn as sns
 import plotly.express as px
 plt.style.use('fivethirtyeight')
-
+# Classifieur Xgboost
+import xgboost
 # Librairie Pycaret et scikit-learn
 import pycaret
 from pycaret.classification import *
@@ -15,7 +17,6 @@ from pycaret.classification import load_model, predict_model
 from sklearn.model_selection import train_test_split
 import shap
 shap.initjs()
-
 # Chargement et traitement d'image image
 from PIL import Image
 
@@ -41,10 +42,10 @@ def main() :
         # test_predict_pycaret = pd.read_csv('data_tableau_300_xgb/test_df_std_300_sample.csv').drop('Unnamed: 0', axis=1) 
         test_df_std_sample = pd.read_csv('data_tableau_300_xgb/test_df_std_300_sample.csv').drop('Unnamed: 0', axis=1)
         
-        # Jeux de données pour les features importance (SHAP Values) utilisé avec xgboost en alternative à Pycaret => Ici le module shap sera utilisé avec Pycaret
-        # train_shap = pd.read_csv('data_tableau_300_xgb/train_shape.csv').drop('Unnamed: 0', axis=1)
-        # test_shap = pd.read_csv('data_tableau_300_xgb/test_shape.csv').drop('Unnamed: 0', axis=1)
-        # y_shap = pd.read_csv('data_tableau_300_xgb/y_shape.csv').drop('Unnamed: 0', axis=1)
+        # Jeux de données pour les features importance (SHAP Values)
+        train_shap = pd.read_csv('data_tableau_300_xgb/train_shape.csv').drop('Unnamed: 0', axis=1)
+        test_shap = pd.read_csv('data_tableau_300_xgb/test_shape.csv').drop('Unnamed: 0', axis=1)
+        y_shap = pd.read_csv('data_tableau_300_xgb/y_shape.csv').drop('Unnamed: 0', axis=1)
         
         
         target = train_compare.iloc[:, -1:]
@@ -221,16 +222,33 @@ def main() :
     # Feature importance / SHAP Values
     
     if st.checkbox("Identifiant client {:.0f} : caractéristiques importantes.".format(chk_id)):
+        import numpy as np
+        import shap
+        shap.initjs()
+        X = train_shap
+        y = y_shap
+        # create a train/test split
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=7)
+        d_train = xgboost.DMatrix(X_train, label=y_train)
+        d_test = xgboost.DMatrix(X_test, label=y_test)
+        # Former le modele
+        params = {
+            "eta": 0.01,
+            "objective": "binary:logistic",
+            "subsample": 0.5,
+            "base_score": float(np.mean(y_train)),
+            "eval_metric": "logloss"
+        }
+        model = xgboost.train(params, d_train, 10000, evals = [(d_test, "test")], verbose_eval=100, early_stopping_rounds=20)
         
-        shap_test = test_df_std_sample[test_df_std_sample['SK_ID_CURR'] == chk_id]
-        train_pipe = clf[:-1].transform(shap_test)
+        client_shap = test_shap[test_shap['SK_ID_CURR'] == chk_id]
             
         # Interprétation et Affichage du bar plot des features importances
         fig, ax = plt.subplots(figsize=(10, 10))
-        explainer = shap.TreeExplainer(clf.named_steps["trained_model"])
-        shap_values = explainer.shap_values(train_pipe)
+        explainer = shap.TreeExplainer(model)
+        shap_values = explainer.shap_values(X)
         number = st.slider("Choix du nombre de caratéristiques du client …", 0, 20, 8)
-        shap.summary_plot(shap_values, train_pipe, max_display=number, plot_type ="bar", color_bar=False)
+        shap.summary_plot(shap_values, client_shap, max_display=number, plot_type ="bar", color_bar=False)
         st.pyplot(fig)
         
     else:
