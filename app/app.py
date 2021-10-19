@@ -222,37 +222,37 @@ def main() :
 
     # Feature importance / SHAP Values
     
-    if st.checkbox("Identifiant client {:.0f} : caractéristiques importantes.".format(chk_id)):
+    # if st.checkbox("Identifiant client {:.0f} : caractéristiques importantes.".format(chk_id)):
         
-        shap.initjs()
-        X = train_shap
-        y = y_shap
+    #    shap.initjs()
+    #    X = train_shap
+    #   y = y_shap
         # create a train/test split
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=7)
-        d_train = xgboost.DMatrix(X_train, label=y_train)
-        d_test = xgboost.DMatrix(X_test, label=y_test)
+    #    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=7)
+    #    d_train = xgboost.DMatrix(X_train, label=y_train)
+    #    d_test = xgboost.DMatrix(X_test, label=y_test)
         # Former le modele
-        params = {
-            "eta": 0.01,
-            "objective": "binary:logistic",
-            "subsample": 0.5,
-            "base_score": 0.5,    # float(np.mean(y_train))
-            "eval_metric": "auc"
-        }
-        model = xgboost.train(params, d_train, 10000, evals = [(d_test, "test")], verbose_eval=100, early_stopping_rounds=20)
+    #    params = {
+    #        "eta": 0.01,
+    #        "objective": "binary:logistic",
+    #        "subsample": 0.5,
+    #        "base_score": 0.5,    # float(np.mean(y_train))
+    #        "eval_metric": "logloss"
+    #    }
+    #    model = xgboost.train(params, d_train, 10000, evals = [(d_test, "test")], verbose_eval=100, early_stopping_rounds=20)
         
-        client_shap = test_shap[test_shap['SK_ID_CURR'] == chk_id]
+    #    client_shap = test_shap[test_shap['SK_ID_CURR'] == chk_id]
             
         # Interprétation et Affichage du bar plot des features importances
-        fig, ax = plt.subplots(figsize=(10, 10))
-        explainer = shap.TreeExplainer(model)
-        shap_values = explainer.shap_values(X)
-        number = st.slider("Choix du nombre de caratéristiques du client …", 0, 20, 8)
-        shap.summary_plot(shap_values, client_shap, max_display=number, plot_type ="bar", color_bar=False)
-        st.pyplot(fig)
+    #    fig, ax = plt.subplots(figsize=(10, 10))
+    #    explainer = shap.TreeExplainer(model)
+    #    shap_values = explainer.shap_values(X)
+    #    number = st.slider("Choix du nombre de caratéristiques du client …", 0, 20, 8)
+    #    shap.summary_plot(shap_values, client_shap, max_display=number, plot_type ="bar", color_bar=False)
+    #    st.pyplot(fig)
         
-    else:
-        st.write("<i>…</i>", unsafe_allow_html=True)
+    # else:
+    #    st.write("<i>…</i>", unsafe_allow_html=True)
     
     # Afficahe des principales caractéristiques des clients similaires défaillants et non défaillants
     
