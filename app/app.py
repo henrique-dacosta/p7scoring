@@ -45,14 +45,14 @@ def main() :
         test_df_std_sample = pd.read_csv('data_tableau_300_xgb/test_df_std_300_sample.csv').drop('Unnamed: 0', axis=1)
         
         # Jeux de données pour les features importance (SHAP Values) utilisé avec xgboost en alternative à Pycaret => Ici le module shap sera utilisé avec Pycaret
-        # train_shap = pd.read_csv('data_tableau_300_xgb/train_shape.csv').drop('Unnamed: 0', axis=1)
-        # test_shap = pd.read_csv('data_tableau_300_xgb/test_shape.csv').drop('Unnamed: 0', axis=1)
-        # y_shap = pd.read_csv('data_tableau_300_xgb/y_shape.csv').drop('Unnamed: 0', axis=1)
+        train_shap = pd.read_csv('data_tableau_300_xgb/train_shape.csv').drop('Unnamed: 0', axis=1)
+        test_shap = pd.read_csv('data_tableau_300_xgb/test_shape.csv').drop('Unnamed: 0', axis=1)
+        y_shap = pd.read_csv('data_tableau_300_xgb/y_shape.csv').drop('Unnamed: 0', axis=1)
         
         
         target = train_compare.iloc[:, -1:]
 
-        return test_info_client, selection_clients, train_compare, compare_client, test_df_std_sample, target
+        return test_info_client, selection_clients, train_compare, compare_client, test_df_std_sample, train_shap, test_shap, y_shap, target
 
 
     # @st.cache
