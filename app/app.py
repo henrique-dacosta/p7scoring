@@ -222,8 +222,8 @@ def main() :
     # Feature importance / SHAP Values
     
     if st.checkbox("Identifiant client {:.0f} : caractéristiques importantes.".format(chk_id)):
-        # import numpy
-        # import shap
+        from numpy import *
+        import shap
         shap.initjs()
         X = train_shap
         y = y_shap
@@ -237,7 +237,7 @@ def main() :
             "objective": "binary:logistic",
             "subsample": 0.5,
             "base_score": 0.5,    # float(np.mean(y_train))
-            "eval_metric": "logloss"
+            "eval_metric": "auc"
         }
         model = xgboost.train(params, d_train, 10000, evals = [(d_test, "test")], verbose_eval=100, early_stopping_rounds=20)
         
