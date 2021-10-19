@@ -9,7 +9,7 @@ import plotly.express as px
 plt.style.use('fivethirtyeight')
 
 # Librairie Pycaret et scikit-learn
-import pycaret
+from pycaret import *
 from pycaret.classification import *
 from pycaret.utils import check_metric
 from sklearn.metrics import log_loss
@@ -229,12 +229,12 @@ def main() :
         train_pipe = clf[:-1].transform(shap_test)
             
         # Interprétation et Affichage du bar plot des features importances
-        fig, ax = plt.subplots(figsize=(10, 10))
+        # fig, ax = plt.subplots(figsize=(10, 10))
         explainer = shap.TreeExplainer(clf.named_steps["trained_model"])
         shap_values = explainer.shap_values(train_pipe)
         number = st.slider("Choix du nombre de caratéristiques du client …", 0, 20, 8)
         shap.summary_plot(shap_values, train_pipe, max_display=number, plot_type ="bar", color_bar=False)
-        st.pyplot(fig)
+        # st.pyplot(fig)
         
     else:
         st.write("<i>…</i>", unsafe_allow_html=True)
