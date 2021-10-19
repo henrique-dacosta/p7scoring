@@ -236,7 +236,7 @@ def main() :
             "eta": 0.01,
             "objective": "binary:logistic",
             "subsample": 0.5,
-            "base_score": float(np.mean(y_train)),
+            "base_score": 0.5,    # float(np.mean(y_train))
             "eval_metric": "logloss"
         }
         model = xgboost.train(params, d_train, 10000, evals = [(d_test, "test")], verbose_eval=100, early_stopping_rounds=20)
