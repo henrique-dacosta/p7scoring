@@ -27,7 +27,8 @@ from PIL import Image
 def main() :
 
     # Chargement des données
-    @st.cache
+    
+    # @st.cache
     def load_data():
         
         # Informations sur le client choisi dans la base Test sans Target
@@ -54,7 +55,7 @@ def main() :
         return test_info_client, selection_clients, train_compare, compare_client, test_df_std_sample, train_shap, test_shap, y_shap, target
 
 
-    @st.cache
+    # @st.cache
     def load_infos_gen(data):
         lst_infos = [data.shape[0],
                      round(data["AMT_INCOME_TOTAL"].mean(), 2),
@@ -73,18 +74,18 @@ def main() :
         data_client = data[data.index == int(id)]
         return data_client
 
-    @st.cache
+   # @st.cache
     def load_age_population(data):
         data_age = round((data["AGE"]), 2)
         return data_age
 
-    @st.cache
+    # @st.cache
     def load_income_population(sample):
         df_income = pd.DataFrame(sample["AMT_INCOME_TOTAL"])
         df_income = df_income.loc[df_income['AMT_INCOME_TOTAL'] < 200000, :]
         return df_income
     
-    @st.cache
+    # @st.cache
     def load_prediction(predict_test, id):
         Score = float(predict_test[predict_test['SK_ID_CURR'] == int(id)].Score.values)
         Label = int(predict_test[predict_test['SK_ID_CURR'] == int(id)].Label.values)
